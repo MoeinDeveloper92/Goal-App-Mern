@@ -1,11 +1,13 @@
+const Goal = require("../models/goalModel")
 const asyncHandler = require("express-async-handler")
+
+
 //@desc     Get Goals
 //@route    GET /api/goals
 //@access   public
 const getGoals = asyncHandler(async (req, res, next) => {
-    res.status(200).json({
-        msg: "Get all goals"
-    })
+    const goals = await Goal.find()
+    res.status(200).json(goals)
 }
 )
 
@@ -14,14 +16,16 @@ const getGoals = asyncHandler(async (req, res, next) => {
 //@route    POST /api/goals
 //@access   Private
 const setGoal = asyncHandler(async (req, res, next) => {
+
     if (!req.body.text) {
         //it is cionsidered as bad request
         res.status(400)
         throw new Error("Please add a text field")
     }
-    res.status(200).json({
-        msg: "Create Goal"
+    const goal = await Goal.create({
+        text: req.body.text
     })
+    res.status(200).json(goal)
 })
 
 
@@ -29,17 +33,39 @@ const setGoal = asyncHandler(async (req, res, next) => {
 //@route    PUT /api/goals/:id
 //@access   Private
 const updateGoal = asyncHandler(async (req, res, next) => {
-    res.status(200).json({
-        msg: `Update goals with id ${req.params.id}`
+    //get the goal that we are trying to update
+    const goal = await Goal.findById(req.params.id)
+
+    if (!goal) {
+        res.status(400)
+        throw new Error("Goal not found")
+    }
+
+    const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
+        new: true
     })
+    res.status(200).json(updatedGoal)
 })
+
+
 
 //@desc     Delete goal
 //@route    DELETE /api/goals/:id
 //@access   private
 const deleteGoal = asyncHandler(async (req, res, next) => {
+    //first we need to check for the goal 
+    const goal = await Goal.findById(req.params.id)
+
+    if (!goal) {
+        res.status(400)
+        throw new Error("Goal not found")
+    }
+
+    await Goal.findByIdAndDelete(req.params.id)
+
     res.status(200).json({
-        msg: `Delete goal with id ${req.params.id}`
+        id: req.params.id,
+        msg: "Deleted successfully"
     })
 })
 

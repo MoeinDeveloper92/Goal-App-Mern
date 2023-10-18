@@ -1,9 +1,11 @@
 const express = require("express")
+const colors = require("colors")
+const connectDB = require("./config/db")
 const dotenv = require("dotenv").config()
 const { errorHandler } = require("./middleware/errorMiddleware")
 const PORT = process.env.PORT || 5000
 
-
+connectDB()
 const app = express()
 //in order to use body data we need to have bpody parse
 app.use(express.json())
