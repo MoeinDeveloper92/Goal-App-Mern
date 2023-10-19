@@ -25,7 +25,7 @@ const setGoal = asyncHandler(async (req, res, next) => {
         text: req.body.text,
         user: req.user.id
     })
-    res.status(200).json(goal)
+    res.status(201).json(goal)
 })
 
 
